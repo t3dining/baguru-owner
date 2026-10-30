@@ -39,6 +39,8 @@
   --en: "Oswald", "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* hidden を付けたものは、display を書いたものでも必ず隠す（「この端末から消す」が出たままにならないように） */
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 /* 画面の真ん中に置きます。
    iPhone の上端（ノッチ／ダイナミックアイランド）に食い込まないよう、safe-area-inset 分の余白を必ず空けます */
@@ -84,7 +86,9 @@ body {
   border-radius: 16px; box-shadow: 0 2px 8px rgba(31, 25, 22, .06);
   color: var(--ink); text-align: left; text-decoration: none;
 }
-a.hub-card:active { background: var(--soft); }
+/* ホームページの管理のカードは、行き先がこのファイルに無いので <button>（押したときに、端末に覚えたアドレスを開く） */
+button.hub-card { font: inherit; cursor: pointer; -webkit-appearance: none; appearance: none; }
+a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var(--soft); }
 .hub-card__icon {
   flex: 0 0 auto; width: 60px; height: 60px;
   background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
@@ -110,6 +114,31 @@ a.hub-card:active { background: var(--soft); }
 .hub-card.is-soon .hub-card__name { font-size: 16px; }
 .hub-card__soon { flex: 0 0 auto; padding: 3px 9px; border-radius: 99px; background: var(--soft);
   font-size: 11.5px; font-weight: 700; color: var(--sub); white-space: nowrap; }
+
+/* 「管理画面のアドレスを変える・消す」の小さなボタン（アドレスを覚えているときだけ出す） */
+.hub__small { margin: 8px 2px 0; text-align: right; }
+.hub__link { font: inherit; font-size: 12px; color: var(--sub); background: none; border: 0; padding: 4px 0;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* 管理画面のアドレスを入れる窓（画面の上にかぶせる） */
+.sheet { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+  background: rgba(31, 25, 22, .55); }
+.sheet[hidden] { display: none; }
+.sheet__box { width: 100%; max-width: 440px; padding: 20px 18px 16px; background: var(--paper);
+  border-radius: 18px; border-top: 5px solid var(--ember); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+.sheet__title { margin: 0 0 6px; font-size: 17px; font-weight: 700; line-height: 1.4; }
+.sheet__text { margin: 0 0 12px; font-size: 12.5px; color: var(--sub); line-height: 1.65; }
+.sheet__input { width: 100%; padding: 11px 12px; font: inherit; font-size: 16px; color: var(--ink);
+  background: var(--cream); border: 1px solid var(--line); border-radius: 10px; }
+.sheet__input:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
+.sheet__err { margin: 8px 0 0; font-size: 13px; font-weight: 700; color: var(--ember); }
+.sheet__btns { display: flex; gap: 10px; margin-top: 14px; }
+.sheet__btn { flex: 1 1 0; min-height: 46px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  color: var(--ink); background: var(--soft); border: 0; border-radius: 12px; }
+.sheet__btn--main { color: #fff; background: var(--coal); }
+.sheet__forget { display: block; margin: 12px auto 0; font: inherit; font-size: 12.5px; color: var(--ember);
+  background: none; border: 0; padding: 4px 8px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 
 .hub__note { margin: 24px 2px 0; font-size: 12px; color: var(--sub); line-height: 1.75; }
 .hub__note b { color: var(--ink); }
@@ -186,31 +215,42 @@ a.hub-card:active { background: var(--soft); }
     </li>
   </ul>
 
+  <!-- ★ホームページの2枚は、ホームページを公開する日まで「準備中」（押せない）。
+       公開したら、下の <script> の HP_OPEN を true にする（セッション「バグる HP」から知らせが来る。ホームページ/）。
+       この Mac では、アドレスに ?hp=open を付けて開くと、公開したときの形で試せる -->
   <h2 class="hub__group" data-en="WEB">ホームページ</h2>
   <ul class="hub__list">
     <li>
-      <!-- ホームページ（ホームページ/。セッション「バグる HP」）。公開したら <a> にして行き先を入れる -->
-      <div class="hub-card is-soon" aria-disabled="true">
-        <span class="hub-card__icon hub-card__icon--mark" aria-hidden="true">🌐</span>
+      <!-- ホームページ。牛のロゴは公式アプリのアイコンと同じもの（ホームページは店舗アプリの img から写している） -->
+      <a class="hub-card" data-hp="site" href="https://t3dining.github.io/baguru/?from=owner"
+         data-local="../../../ホームページ/公開用/index.html?from=owner" style="--card-color:#1f1916">
+        <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-app/img/icon-192.png"
+              data-local="../img/icon-192.png" alt=""></span>
         <span class="hub-card__text">
           <span class="hub-card__name">ホームページ</span>
           <span class="hub-card__sub">お客さまが<wbr>見る<wbr>ホームページ</span>
         </span>
-        <span class="hub-card__soon">準備中</span>
-      </div>
+        <span class="hub-card__arrow" aria-hidden="true">›</span>
+      </a>
     </li>
     <li>
-      <!-- ホームページの管理画面。できたら <a> にして行き先を入れる -->
-      <div class="hub-card is-soon" aria-disabled="true">
+      <!-- ホームページの管理画面（会社の Google の受け口が出す。くわしくは ホームページ/管理/はじめに読む.md）。
+           ★管理画面のアドレスは、このファイルにも、どのファイルにも書かない（この画面は GitHub でだれでも見られるため、
+             書くと「アドレスを知っている人だけ」が崩れる。2026-10-30 ko-dai さんの決め）。
+             はじめて押したときに端末で1回だけ入れてもらい、その端末の localStorage（bg.hpAdmin）に覚える（下の <script>） -->
+      <button type="button" class="hub-card" data-hp="admin" id="hpAdmin" style="--card-color:#7a5c25">
         <span class="hub-card__icon hub-card__icon--mark" aria-hidden="true">🛠️</span>
         <span class="hub-card__text">
           <span class="hub-card__name">ホームページの<wbr>管理</span>
-          <span class="hub-card__sub">ホームページの<wbr>中身を<wbr>直す<wbr>（これから<wbr>作ります）</span>
+          <span class="hub-card__sub">お知らせ・<wbr>メニューを<wbr>直す<wbr>（はじめに<wbr>アドレスを<wbr>入れます）</span>
         </span>
-        <span class="hub-card__soon">準備中</span>
-      </div>
+        <span class="hub-card__arrow" aria-hidden="true">›</span>
+      </button>
     </li>
   </ul>
+  <p class="hub__small" id="hpAdminEditRow" hidden>
+    <button type="button" class="hub__link" id="hpAdminEdit">管理画面のアドレスを変える・消す</button>
+  </p>
 
   <p class="hub__note">
     ホーム画面に追加するのは<b>この画面だけ</b>でOKです（オーナー用）。<br>
@@ -220,6 +260,23 @@ a.hub-card:active { background: var(--soft); }
   </p>
   <p class="hub__foot" id="hubFoot"></p>
 </main>
+
+<!-- ホームページの管理画面のアドレスを入れる窓。★例のアドレスにも、本物の続き（/macros/s/…）は書かない -->
+<div class="sheet" id="hpSheet" hidden>
+  <form class="sheet__box" id="hpForm" novalidate>
+    <h2 class="sheet__title">ホームページの管理画面のアドレスを入れてください</h2>
+    <p class="sheet__text">この端末で1回だけ入れます。次からは押すだけで開きます。<br>
+      Google のアドレス（https://script.google.com/ で始まり、/exec で終わるもの）です。</p>
+    <input class="sheet__input" id="hpUrl" type="url" inputmode="url" autocomplete="off" autocapitalize="off"
+           spellcheck="false" placeholder="https://script.google.com/…/exec" aria-label="管理画面のアドレス">
+    <p class="sheet__err" id="hpErr" hidden>アドレスがちがうようです</p>
+    <div class="sheet__btns">
+      <button type="button" class="sheet__btn" id="hpCancel">やめる</button>
+      <button type="submit" class="sheet__btn sheet__btn--main">覚えて開く</button>
+    </div>
+    <button type="button" class="sheet__forget" id="hpForget" hidden>この端末から消す</button>
+  </form>
+</div>
 
 <script>
   // この Mac で開いたとき（localhost）は、予約ボードを手元のフォルダから開きます。
@@ -233,12 +290,79 @@ a.hub-card:active { background: var(--soft); }
     });
   }
   if (TEST) {
-    document.querySelectorAll('a.hub-card').forEach(function (a) {
+    document.querySelectorAll('a.hub-card[href]').forEach(function (a) {
       var url = new URL(a.getAttribute('href'), location.href);
       url.searchParams.set('test', '');
       a.href = url.href;
     });
   }
+
+  // ---- ホームページ・ホームページの管理 ----
+  // ★ホームページを公開した日に true にする（それまでは「準備中」で押せない）
+  var HP_OPEN = { site: false, admin: false };
+  if (LOCAL && /[?&]hp=open\b/.test(location.search)) HP_OPEN = { site: true, admin: true };   // この Mac で試すとき
+
+  document.querySelectorAll('[data-hp]').forEach(function (card) {
+    if (HP_OPEN[card.getAttribute('data-hp')]) return;
+    card.classList.add('is-soon');
+    card.setAttribute('aria-disabled', 'true');
+    if (card.tagName === 'A') card.removeAttribute('href'); else card.disabled = true;
+    var arrow = card.querySelector('.hub-card__arrow');
+    var soon = document.createElement('span');
+    soon.className = 'hub-card__soon';
+    soon.textContent = '準備中';
+    arrow.replaceWith(soon);
+  });
+
+  // 管理画面のアドレスは、この端末の localStorage（bg.hpAdmin）にだけ覚えます
+  var HP_ADMIN_KEY = 'bg.hpAdmin';
+  function hpAdminUrl() { try { return localStorage.getItem(HP_ADMIN_KEY) || ''; } catch (e) { return ''; } }
+  // 受け付けるのは、Google の受け口のアドレス（script.google.com の /macros/s/〜/exec）だけ。
+  // この Mac では、にせの受け口が出す管理画面（http://localhost:番号/…）も受け付けます（試すため）
+  function hpAdminOk(u) {
+    return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u) ||
+      (LOCAL && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/\S*$/.test(u));
+  }
+  // 開くときは ?from=owner を付けます（管理画面が左上に「🏠」を出す）
+  function hpAdminOpen(u) { location.href = u + (u.indexOf('?') < 0 ? '?' : '&') + 'from=owner'; }
+
+  var sheet = document.getElementById('hpSheet');
+  var input = document.getElementById('hpUrl');
+  var err = document.getElementById('hpErr');
+  function hpSheetShow() {
+    var saved = hpAdminUrl();
+    input.value = saved;
+    err.hidden = true;
+    document.getElementById('hpForget').hidden = !saved;
+    sheet.hidden = false;
+    input.focus();
+  }
+  function hpSheetHide() { sheet.hidden = true; }
+  function hpEditRow() { document.getElementById('hpAdminEditRow').hidden = !(HP_OPEN.admin && hpAdminUrl()); }
+
+  document.getElementById('hpAdmin').addEventListener('click', function () {
+    var saved = hpAdminUrl();
+    if (saved && hpAdminOk(saved)) hpAdminOpen(saved); else hpSheetShow();
+  });
+  document.getElementById('hpAdminEdit').addEventListener('click', hpSheetShow);
+  document.getElementById('hpCancel').addEventListener('click', hpSheetHide);
+  sheet.addEventListener('click', function (e) { if (e.target === sheet) hpSheetHide(); });
+  document.getElementById('hpForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = input.value.trim();
+    if (!hpAdminOk(u)) { err.hidden = false; input.focus(); return; }
+    try { localStorage.setItem(HP_ADMIN_KEY, u); } catch (x) {}
+    hpSheetHide();
+    hpEditRow();
+    hpAdminOpen(u);
+  });
+  document.getElementById('hpForget').addEventListener('click', function () {
+    try { localStorage.removeItem(HP_ADMIN_KEY); } catch (x) {}
+    input.value = '';
+    hpSheetHide();
+    hpEditRow();
+  });
+  hpEditRow();
 
   // 戻り先（この画面のアドレス）を、この画面のタブの中だけに控えます（sessionStorage の bg.owner）。
   // 公式アプリ・Order受付・予約ボードは公開先も場所もばらばらなので、ホームに戻るボタンを付けるときは、
