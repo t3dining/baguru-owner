@@ -6,9 +6,8 @@
 <meta name="robots" content="noindex, nofollow">   <!-- 試作のあいだは検索に出さない（公式アプリと同じ。2026-10-29 決定） -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- ★iPhone の上の帯（時計・電池）は black（黒い帯の下から画面が始まる）。black-translucent（帯を透かして画面を下にもぐらせる）にしない。
-     ホーム画面のアプリでは、この設定がこの画面から開いたアプリ全部に効く。予約ボードは帯の下を空けない作りなので、
-     もぐらせると上の帯（🏠・更新・＋）が時計の下に入って押せなかった（2026-10-30。ko-dai さんの iPhone で起きた） -->
+<!-- iPhone の上の帯（時計・電池）の設定。★この画面にしか効かないとみられる（予約ボードを開いた写真では、Owner の設定と関係なく時計の字が黒かった）。
+     開いた先のアプリが時計の下に入らないようにするのは、それぞれのアプリの余白（env(safe-area-inset-top)）の仕事（2026-11-01） -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="バグる Owner">
 <meta name="theme-color" content="#1f1916">
