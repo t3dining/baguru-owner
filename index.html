@@ -260,6 +260,7 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
     ホーム画面に追加するのは<b>この画面だけ</b>でOKです（オーナー用）。<br>
     お店のタブレットには、<b>バグるOrder受付</b>（末尾が <b>/order.html</b>）と<b>予約ボード</b>を、
     この画面からではなく、それぞれ直接ホーム画面に追加してください。<br>
+    社員のスマホには<b>バグる Staff</b>（https://t3dining.github.io/baguru-staff/）を追加してもらってください。<br>
     お客さまには<b>公式アプリ</b>（末尾に何も付かないアドレス）を案内してください。
   </p>
   <p class="hub__foot" id="hubFoot"></p>
@@ -372,6 +373,9 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
   // 公式アプリ・Order受付・予約ボードは公開先も場所もばらばらなので、ホームに戻るボタンを付けるときは、
   // ここを読めば、どのアプリからでも同じ書き方で戻れます（?test を付けて開いたときも、そのまま戻る）
   try { sessionStorage.setItem('bg.owner', location.href.split('#')[0]); } catch (e) {}
+  // アプリを閉じると sessionStorage が消えることがあるので、端末に残る localStorage の bg.hub にも控えます
+  // （バグる Staff と同じ。ホーム画面のアプリごとに保存の場所が別なので、Owner と Staff は混ざらない）
+  try { localStorage.setItem('bg.hub', location.href.split('#')[0]); } catch (e) {}
 
   // 公開先の版（公開の道具が書く version.json）を下に出します。どの版が入っているかの確認用。
   // この Mac の中には version.json が無いので、読みにいきません
